@@ -1,8 +1,10 @@
 --extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.2.2+cu118
-torchvision==0.17.2+cu118
-torchaudio==2.2.2+cu118
-xformers==0.0.25.post1+cu118
+# torch==2.2.2+cu118
+# torchvision==0.17.2+cu118
+# torchaudio==2.2.2+cu118
+# xformers==0.0.25.post1+cu118
+# pip install torch==1.12.0+cu113 torchvision==0.13.0+cu113 torchaudio==0.12.0 --extra-index-url https://download.pytorch.org/whl/cu113
+xformers==0.0.16
 omegaconf==2.3.0
 accelerate==0.28.0
 einops==0.7.0
