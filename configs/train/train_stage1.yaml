@@ -23,8 +23,8 @@ dataset:
     params:
       # training file list path
       # file_list: datasets/files_shuf_train.list
-      file_list_HQ: 
-      file_list_LQ: 
+      file_list_HQ: datasets/ZZCX_01_14/train/HQ_shuf.list
+      file_list_LQ: datasets/ZZCX_01_14/train/LQ_shuf.list
       file_backend_cfg:
         target: diffbir.dataset.file_backend.HardDiskBackend
       out_size: 512
@@ -41,8 +41,8 @@ dataset:
     params:
       # validation file list path
       # file_list: datasets/files_shuf_val.list
-      file_list_HQ: 
-      file_list_LQ: 
+      file_list_HQ: datasets/ZZCX_01_14/val/HQ_shuf.list
+      file_list_LQ: datasets/ZZCX_01_14/val/LQ_shuf.list
       file_backend_cfg:
         target: diffbir.dataset.file_backend.HardDiskBackend
       out_size: 512
