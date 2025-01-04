@@ -12,13 +12,13 @@ python  inference.py
 
 数据集处理
 # collect all iamge files in img_dir
-find datasets/data_ZZCX_singleHQ -type f > files.list
+find datasets/data_ZZCX_singleHQ -type f > datasets/files.list
 # shuffle collected files
-shuf files.list > files_shuf.list
+shuf datasets/files.list > datasets/files_shuf.list
 # pick train_size files in the front as training set
-head -n 1300 files_shuf.list > files_shuf_train.list
+head -n 1300 datasets/files_shuf.list > datasets/files_shuf_train.list
 # pick remaining files as validation set
-tail -n 1301 files_shuf.list > files_shuf_val.list
+tail -n 1301 datasets/files_shuf.list > datasets/files_shuf_val.list
 
 Stage 1:
     python train_stage1.py --config configs/train/train_stage1.yaml
