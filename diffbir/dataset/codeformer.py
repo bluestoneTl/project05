@@ -22,9 +22,12 @@ class CodeformerDataset(data.Dataset):
 
     def __init__(
         self,
-        file_list: str,
+        # file_list: str,
+        file_list_HQ: str,
+        file_list_LQ: str,        
         file_backend_cfg: Mapping[str, Any],
         out_size: int,
+        # 以下这些参数原本用于生成LQ图像，现暂时保留
         crop_type: str,
         blur_kernel_size: int,
         kernel_list: Sequence[str],
@@ -35,12 +38,17 @@ class CodeformerDataset(data.Dataset):
         jpeg_range: Sequence[int],
     ) -> "CodeformerDataset":
         super(CodeformerDataset, self).__init__()
-        self.file_list = file_list
-        self.image_files = load_file_list(file_list)
+        # self.file_list = file_list
+        # self.image_files = load_file_list(file_list)
+        self.file_list_HQ = file_list_HQ
+        self.file_list_LQ = file_list_LQ
+        self.image_files_HQ = load_file_list(file_list_HQ)
+        self.image_files_LQ = load_file_list(file_list_LQ)
         self.file_backend = instantiate_from_config(file_backend_cfg)
         self.out_size = out_size
         self.crop_type = crop_type
         assert self.crop_type in ["none", "center", "random"]
+        # 保留原有的HQ图像退化生成LQ图像的配置参数
         # degradation configurations
         self.blur_kernel_size = blur_kernel_size
         self.kernel_list = kernel_list
@@ -77,57 +85,89 @@ class CodeformerDataset(data.Dataset):
         return image
 
     def __getitem__(self, index: int) -> Dict[str, Union[np.ndarray, str]]:
-        # load gt image
-        img_gt = None
-        while img_gt is None:
-            # load meta file
-            image_file = self.image_files[index]
-            gt_path = image_file["image_path"]
-            prompt = image_file["prompt"]
-            img_gt = self.load_gt_image(gt_path)
-            if img_gt is None:
-                print(f"filed to load {gt_path}, try another image")
-                index = random.randint(0, len(self) - 1)
+            # 加载HQ图像
+            img_gt = None
+            while img_gt is None:
+                # 从HQ文件列表中获取对应图像路径
+                image_file_HQ = self.image_files_HQ[index]
+                gt_path = image_file_HQ["image_path"]
+                prompt = image_file_HQ["prompt"]
+                img_gt = self.load_gt_image(gt_path)
+                if img_gt is None:
+                    print(f"filed to load {gt_path}, try another image")
+                    index = random.randint(0, len(self) - 1)    #保留意见len(self.image_files_HQ)
 
-        # Shape: (h, w, c); channel order: BGR; image range: [0, 1], float32.
-        img_gt = (img_gt[..., ::-1] / 255.0).astype(np.float32)
-        h, w, _ = img_gt.shape
-        if np.random.uniform() < 0.5:
-            prompt = ""
+            # 加载LQ图像
+            img_lq = None
+            while img_lq is None:
+                image_file_LQ = self.image_files_LQ[index]
+                lq_path = image_file_LQ["image_path"]
+                img_lq = self.load_gt_image(lq_path)
+                if img_lq is None:
+                    print(f"filed to load {lq_path}, try another image")
+                    index = random.randint(0, len(self) - 1)
 
-        # ------------------------ generate lq image ------------------------ #
-        # blur
-        kernel = random_mixed_kernels(
-            self.kernel_list,
-            self.kernel_prob,
-            self.blur_kernel_size,
-            self.blur_sigma,
-            self.blur_sigma,
-            [-math.pi, math.pi],
-            noise_range=None,
-        )
-        img_lq = cv2.filter2D(img_gt, -1, kernel)
-        # downsample
-        scale = np.random.uniform(self.downsample_range[0], self.downsample_range[1])
-        img_lq = cv2.resize(
-            img_lq, (int(w // scale), int(h // scale)), interpolation=cv2.INTER_LINEAR
-        )
-        # noise
-        if self.noise_range is not None:
-            img_lq = random_add_gaussian_noise(img_lq, self.noise_range)
-        # jpeg compression
-        if self.jpeg_range is not None:
-            img_lq = random_add_jpg_compression(img_lq, self.jpeg_range)
+            img_gt = (img_gt[..., ::-1] / 255.0).astype(np.float32)
+            gt = (img_gt[..., ::-1] * 2 - 1).astype(np.float32)
 
-        # resize to original size
-        img_lq = cv2.resize(img_lq, (w, h), interpolation=cv2.INTER_LINEAR)
+            img_lq = (img_lq[..., ::-1] / 255.0).astype(np.float32)
+            lq = (img_lq[..., ::-1] * 2 - 1).astype(np.float32)
 
-        # BGR to RGB, [-1, 1]
-        gt = (img_gt[..., ::-1] * 2 - 1).astype(np.float32)
-        # BGR to RGB, [0, 1]
-        lq = img_lq[..., ::-1].astype(np.float32)
+            return gt, lq, prompt
 
-        return gt, lq, prompt
+    # def __getitem__(self, index: int) -> Dict[str, Union[np.ndarray, str]]:
+    #     # load gt image
+    #     img_gt = None
+    #     while img_gt is None:
+    #         # load meta file
+    #         image_file = self.image_files[index]
+    #         gt_path = image_file["image_path"]
+    #         prompt = image_file["prompt"]
+    #         img_gt = self.load_gt_image(gt_path)
+    #         if img_gt is None:
+    #             print(f"filed to load {gt_path}, try another image")
+    #             index = random.randint(0, len(self) - 1)        
+
+    #     # Shape: (h, w, c); channel order: BGR; image range: [0, 1], float32.
+    #     img_gt = (img_gt[..., ::-1] / 255.0).astype(np.float32)
+    #     h, w, _ = img_gt.shape
+    #     if np.random.uniform() < 0.5:
+    #         prompt = ""
+
+    #     # ------------------------ generate lq image ------------------------ #
+    #     # blur
+    #     kernel = random_mixed_kernels(
+    #         self.kernel_list,
+    #         self.kernel_prob,
+    #         self.blur_kernel_size,
+    #         self.blur_sigma,
+    #         self.blur_sigma,
+    #         [-math.pi, math.pi],
+    #         noise_range=None,
+    #     )
+    #     img_lq = cv2.filter2D(img_gt, -1, kernel)
+    #     # downsample
+    #     scale = np.random.uniform(self.downsample_range[0], self.downsample_range[1])
+    #     img_lq = cv2.resize(
+    #         img_lq, (int(w // scale), int(h // scale)), interpolation=cv2.INTER_LINEAR
+    #     )
+    #     # noise
+    #     if self.noise_range is not None:
+    #         img_lq = random_add_gaussian_noise(img_lq, self.noise_range)
+    #     # jpeg compression
+    #     if self.jpeg_range is not None:
+    #         img_lq = random_add_jpg_compression(img_lq, self.jpeg_range)
+
+    #     # resize to original size
+    #     img_lq = cv2.resize(img_lq, (w, h), interpolation=cv2.INTER_LINEAR)
+
+    #     # BGR to RGB, [-1, 1]
+    #     gt = (img_gt[..., ::-1] * 2 - 1).astype(np.float32)
+    #     # BGR to RGB, [0, 1]
+    #     lq = img_lq[..., ::-1].astype(np.float32)
+
+    #     return gt, lq, prompt
 
     def __len__(self) -> int:
-        return len(self.image_files)
+        # return len(self.image_files)
+        return len(self.image_files_HQ)
