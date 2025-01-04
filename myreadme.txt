@@ -20,6 +20,22 @@ head -n 1300 datasets/files_shuf.list > datasets/files_shuf_train.list
 # pick remaining files as validation set
 tail -n 1301 datasets/files_shuf.list > datasets/files_shuf_val.list
 
+test:
+    find datasets/ZZCX_01_14/test/HQ -type f > datasets/ZZCX_01_14/test/HQ.list
+    shuf datasets/ZZCX_01_14/test/HQ.list > datasets/ZZCX_01_14/test/HQ_shuf.list
+    find datasets/ZZCX_01_14/test/LQ -type f > datasets/ZZCX_01_14/test/LQ.list
+    shuf datasets/ZZCX_01_14/test/LQ.list > datasets/ZZCX_01_14/test/LQ_shuf.list
+train:
+    find datasets/ZZCX_01_14/train/HQ -type f > datasets/ZZCX_01_14/train/HQ.list
+    shuf datasets/ZZCX_01_14/train/HQ.list > datasets/ZZCX_01_14/train/HQ_shuf.list
+    find datasets/ZZCX_01_14/train/LQ -type f > datasets/ZZCX_01_14/train/LQ.list
+    shuf datasets/ZZCX_01_14/train/LQ.list > datasets/ZZCX_01_14/train/LQ_shuf.list
+val:
+    find datasets/ZZCX_01_14/val/HQ -type f > datasets/ZZCX_01_14/val/HQ.list
+    shuf datasets/ZZCX_01_14/val/HQ.list > datasets/ZZCX_01_14/val/HQ_shuf.list
+    find datasets/ZZCX_01_14/val/LQ -type f > datasets/ZZCX_01_14/val/LQ.list
+    shuf datasets/ZZCX_01_14/val/LQ.list > datasets/ZZCX_01_14/val/LQ_shuf.list
+
 Stage 1:
     python train_stage1.py --config configs/train/train_stage1.yaml
 
