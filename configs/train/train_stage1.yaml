@@ -22,7 +22,7 @@ dataset:
     target: diffbir.dataset.codeformer.CodeformerDataset
     params:
       # training file list path
-      file_list: 
+      file_list: files_shuf_train.list
       file_backend_cfg:
         target: diffbir.dataset.file_backend.HardDiskBackend
       out_size: 512
@@ -38,7 +38,7 @@ dataset:
     target: diffbir.dataset.codeformer.CodeformerDataset
     params:
       # validation file list path
-      file_list: 
+      file_list: files_shuf_val.list
       file_backend_cfg:
         target: diffbir.dataset.file_backend.HardDiskBackend
       out_size: 512
