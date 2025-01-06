@@ -60,7 +60,7 @@ batch_transform:
 
 train:
   # experiment directory path
-  exp_dir: experiment
+  exp_dir: experiment/stage1
   learning_rate: 1e-4
   # total batch size
   batch_size: 16
