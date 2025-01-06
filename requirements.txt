@@ -4,7 +4,7 @@
 # torchaudio==2.2.2+cu118
 # xformers==0.0.25.post1+cu118
 # pip install torch==1.12.0+cu113 torchvision==0.13.0+cu113 torchaudio==0.12.0 --extra-index-url https://download.pytorch.org/whl/cu113
-xformers==0.0.16
+xformers==0.0.16    # https://blog.csdn.net/wangning6252820/article/details/134056100
 omegaconf==2.3.0
 accelerate==0.28.0
 einops==0.7.0
@@ -14,7 +14,7 @@ ftfy==6.2.0
 regex==2023.12.25
 python-dateutil==2.9.0.post0
 timm==0.9.16
-pytorch-lightning==2.2.1 # only for loading pretrained sd weight
+pytorch-lightning==2.2.1 # only for loading pretrained sd weight   # pip install pytorch-lightning==1.9.5  torch限制，用这个
 tensorboard==2.16.2 # for tensorboard event visualization
 protobuf==4.25.3 # for tensorboard
 lpips==0.1.4
