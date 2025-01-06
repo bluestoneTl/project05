@@ -22,7 +22,7 @@ from .k_diffusion import (
 from ..model.cldm import ControlLDM
 from ..utils.common import make_tiled_fn, trace_vram_usage
 
-
+import typing
 class EDMSampler(Sampler):
 
     TYPE_TO_SOLVER = {
@@ -142,7 +142,8 @@ class EDMSampler(Sampler):
         model: ControlLDM,
         device: str,
         steps: int,
-        x_size: torch.Tuple[int],
+        # x_size: torch.Tuple[int],
+        x_size: typing.Tuple[int],
         cond: Dict[str, torch.Tensor],
         uncond: Dict[str, torch.Tensor],
         cfg_scale: float,
