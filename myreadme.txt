@@ -43,3 +43,4 @@ Stage 2:
     Download pretrained Stable Diffusion v2.1 
     wget https://hf-mirror.com/stabilityai/stable-diffusion-2-1-base/resolve/main/v2-1_512-ema-pruned.ckpt --no-check-certificate
     python train_stage2.py --config configs/train/train_stage2.yaml
+

@@ -135,5 +135,5 @@ train:
   log_every: 50
   ckpt_every: 10000
   image_every: 1000
-  resume: ~
+  resume: experiment/stage1/checkpoints/020000.pt
   noise_aug_timestep: 0
