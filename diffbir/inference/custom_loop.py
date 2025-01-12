@@ -46,6 +46,14 @@ class CustomInferenceLoop(InferenceLoop):
         )
         # load controlnet weight
         control_weight = torch.load(self.args.ckpt, map_location="cpu")
+
+        # === 尝试解决推理黑图问题 ===         下面代码来自common.py 118-121行 
+        if "state_dict" in control_weight:
+            control_weight = control_weight["state_dict"]
+        if list(control_weight.keys())[0].startswith("module"):
+            control_weight = {k[len("module.") :]: v for k, v in control_weight.items()}
+        # === 尝试解决推理黑图问题 ===
+
         self.cldm.load_controlnet_from_ckpt(control_weight)
         print(f"load controlnet weight")
         self.cldm.eval().to(self.args.device)

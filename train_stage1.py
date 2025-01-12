@@ -129,7 +129,7 @@ def main(args) -> None:
             # Log loss values:
             if global_step % cfg.train.log_every == 0:
                 # Gather values from all processes
-                avg_loss = (
+                avg_loss = (    
                     accelerator.gather(
                         torch.tensor(step_loss, device=device).unsqueeze(0)
                     )

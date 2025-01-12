@@ -120,10 +120,10 @@ train:
   # pretrained sd v2.1 path
   sd_path: weights/v2-1_512-ema-pruned.ckpt
   # experiment directory path
-  exp_dir: experiment/stage2
+  exp_dir: experiment2/stage2
   # stage 1 swinir path.
   # In our paper, we use SwinIR trained on ImageNet-1k with codeformer degradation.
-  swinir_path: experiment/stage1/checkpoints/0150000.pt
+  swinir_path: experiment2/stage1/checkpoints/0150000.pt
   learning_rate: 1e-4
   # ImageNet 1k (1.3M images)
   # batch size = 192, lr = 1e-4, total training steps = 25k
@@ -131,9 +131,9 @@ train:
   # batch size = 256, lr = 1e-4 (first 30k), 1e-5 (next 50k), total training steps = 80k
   batch_size: 16         # 256
   num_workers: 4
-  train_steps: 80000      # 30000
+  train_steps: 30000     # 30000
   log_every: 50
   ckpt_every: 10000
   image_every: 1000
-  resume: experiment/stage2/checkpoints/0020000.pt
+  resume: 
   noise_aug_timestep: 0

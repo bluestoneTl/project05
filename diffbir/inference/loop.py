@@ -93,6 +93,9 @@ class InferenceLoop:
         else:
             config = "configs/inference/diffusion_v2.1.yaml"
         self.diffusion: Diffusion = instantiate_from_config(OmegaConf.load(config))
+        print("config:", config)
+        import time
+        time.sleep(3000)
         self.diffusion.to(self.args.device)
 
     def load_cond_fn(self) -> None:
@@ -101,7 +104,7 @@ class InferenceLoop:
             return
         if self.args.g_loss == "mse":
             cond_fn_cls = MSEGuidance
-        elif self.args.g_loss == "w_mse":
+        elif self.args.g_loss == "w_mse":   
             cond_fn_cls = WeightedMSEGuidance
         else:
             raise ValueError(self.args.g_loss)

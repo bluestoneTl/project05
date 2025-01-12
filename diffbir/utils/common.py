@@ -111,7 +111,9 @@ def load_file_from_url(url, model_dir=None, progress=True, file_name=None):
 
 
 def load_model_from_url(url: str) -> Dict[str, torch.Tensor]:
-    sd_path = load_file_from_url(url, model_dir="weights")
+    # sd_path = load_file_from_url(url, model_dir="weights")        # 这里通过传过来的URL下载模型，但我改为了传过来本地路径。直接加载模型
+    sd_path = url
+    
     sd = torch.load(sd_path, map_location="cpu")
     if "state_dict" in sd:
         sd = sd["state_dict"]

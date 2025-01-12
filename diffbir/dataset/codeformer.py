@@ -110,8 +110,15 @@ class CodeformerDataset(data.Dataset):
             img_gt = (img_gt[..., ::-1] / 255.0).astype(np.float32)
             gt = (img_gt[..., ::-1] * 2 - 1).astype(np.float32)
 
-            img_lq = (img_lq[..., ::-1] / 255.0).astype(np.float32)
-            lq = (img_lq[..., ::-1] * 2 - 1).astype(np.float32)
+            lq = (img_lq[..., ::-1] / 255.0).astype(np.float32)
+            # lq = (img_lq[..., ::-1] * 2 - 1).astype(np.float32)
+            
+            # # 测试图像读入是否正确
+            # print("gt如下:")
+            # print(gt)
+            # print("lq如下:")
+            # print(lq)
+            # time.sleep(300)
 
             return gt, lq, prompt
 

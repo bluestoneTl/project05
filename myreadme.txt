@@ -44,3 +44,46 @@ Stage 2:
     wget https://hf-mirror.com/stabilityai/stable-diffusion-2-1-base/resolve/main/v2-1_512-ema-pruned.ckpt --no-check-certificate
     python train_stage2.py --config configs/train/train_stage2.yaml
 
+测试命令：
+python -u inference.py --task denoise --upscale 1 --version v2 --sampler spaced --steps 50 --captioner none --pos_prompt '' --neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' --cfg_scale 4.0 --input datasets/ZZCX_01_14/test/LQ --output results/1_7_1 --device cuda --precision fp32
+
+自定义模型的测试命令：
+python -u inference.py \
+--upscale 1 \
+--version custom \
+--train_cfg configs/train/train_stage2.yaml \
+--ckpt experiment2/stage2/checkpoints/0030000.pt \
+--captioner llava \
+--cfg_scale 8 \
+--noise_aug 0 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.12/custom \
+--precision fp16
+
+推理实验  
+1_7     都是用自定义模型测试,  --captioner none
+1_7_2   都是用自定义模型测试   --captioner llava
+1_7_3   v1的denoise测试  
+1_7_4   v2的denoise测试    更改了bid_loop.py的v2加载模型为 swinir
+
+注意，在pretrained_models.py中更改了模型的加载路径，在common.py中更改了加载方式
+去噪案例命令：
+python -u inference.py \
+--task denoise \
+--upscale 1 \
+--version v2 \
+--sampler spaced \
+--steps 50 \
+--captioner llava \
+--pos_prompt '' \
+--neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' \
+--cfg_scale 4.0 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.12/denoise \
+--device cuda \
+--precision fp16
+
+【1.12推理实验】    在results/1.12 下
+custom             自定义模型测试 --precision fp16   全黑
+custom_1           自定义模型测试 --precision fp32   出现图片，但奇怪质量
+denoise            去噪案例命令  
