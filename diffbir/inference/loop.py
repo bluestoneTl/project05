@@ -94,8 +94,6 @@ class InferenceLoop:
             config = "configs/inference/diffusion_v2.1.yaml"
         self.diffusion: Diffusion = instantiate_from_config(OmegaConf.load(config))
         print("config:", config)
-        import time
-        time.sleep(3000)
         self.diffusion.to(self.args.device)
 
     def load_cond_fn(self) -> None:

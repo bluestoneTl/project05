@@ -79,11 +79,12 @@ python -u inference.py \
 --neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' \
 --cfg_scale 4.0 \
 --input datasets/ZZCX_01_14/test/LQ \
---output results/1.12/denoise \
+--output results/1.12/denoise_1 \
 --device cuda \
---precision fp16
+--precision fp32
 
 【1.12推理实验】    在results/1.12 下
 custom             自定义模型测试 --precision fp16   全黑
 custom_1           自定义模型测试 --precision fp32   出现图片，但奇怪质量
-denoise            去噪案例命令  
+denoise            去噪案例命令   --precision fp16
+denoise_1          去噪案例命令   --precision fp32
