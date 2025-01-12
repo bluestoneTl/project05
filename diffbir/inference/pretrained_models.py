@@ -39,23 +39,23 @@ MODELS = {
     "swinir_face": "https://huggingface.co/lxq007/DiffBIR/resolve/main/face_swinir_v1.ckpt",
     "scunet_psnr": "https://github.com/cszn/KAIR/releases/download/v1.0/scunet_color_real_psnr.pth",
 
-    # "swinir_general": "https://huggingface.co/lxq007/DiffBIR/resolve/main/general_swinir_v1.ckpt",   更改为我的一阶段训练swinir模型
-    "swinir_general": "experiment/stage1/checkpoints/0150000.pt",
+    "swinir_general": "https://huggingface.co/lxq007/DiffBIR/resolve/main/general_swinir_v1.ckpt",   #更改为我的一阶段训练swinir模型
+    # "swinir_general": "experiment2/stage1/checkpoints/0150000.pt",
 
     "swinir_realesrgan": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/realesrgan_s4_swinir_100k.pth",
     # --------------- pre-trained stable diffusion weights ---------------
-    # "sd_v2.1": "https://huggingface.co/stabilityai/stable-diffusion-2-1-base/resolve/main/v2-1_512-ema-pruned.ckpt",  同样更改，使用本地加载方式
-    "sd_v2.1": "weights/v2-1_512-ema-pruned.ckpt",
+    "sd_v2.1": "https://huggingface.co/stabilityai/stable-diffusion-2-1-base/resolve/main/v2-1_512-ema-pruned.ckpt",  #同样更改，使用本地加载方式
+    # "sd_v2.1": "weights/v2-1_512-ema-pruned.ckpt",
 
     "sd_v2.1_zsnr": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/sd2.1-base-zsnr-laionaes5.ckpt",
     # --------------- IRControlNet weights ---------------
     "v1_face": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/v1_face.pth",
 
-    # "v1_general": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/v1_general.pth",             更改为我的二阶段训练的模型
-    "v1_general": "experiment/stage2/checkpoints/0020000.pt",
+    "v1_general": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/v1_general.pth",             #更改为我的二阶段训练的模型
+    # "v1_general": "experiment2/stage2/checkpoints/0030000.pt",
 
-    # "v2": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/v2.pth",                             更改为我的二阶段训练的模型
-    "v2": "experiment/stage2/checkpoints/0020000.pt",
+    "v2": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/v2.pth",                             #更改为我的二阶段训练的模型
+    # "v2": "experiment2/stage2/checkpoints/0030000.pt",
     
     "v2.1": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/DiffBIR_v2.1.pt",
 }
