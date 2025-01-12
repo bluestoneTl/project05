@@ -74,12 +74,12 @@ python -u inference.py \
 --version v2 \
 --sampler spaced \
 --steps 50 \
---captioner llava \
+--captioner none \
 --pos_prompt '' \
 --neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' \
 --cfg_scale 4.0 \
---input datasets/ZZCX_01_14/train/LQ \
---output results/1.12/denoise_2 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.12/denoise_3 \
 --device cuda \
 --precision fp32
 
