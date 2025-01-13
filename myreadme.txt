@@ -79,7 +79,7 @@ python -u inference.py \
 --neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' \
 --cfg_scale 4.0 \
 --input datasets/ZZCX_01_14/test/LQ \
---output results/1.12/denoise_3 \
+--output results/1.13/denoise_0 \
 --device cuda \
 --precision fp32
 
@@ -90,4 +90,8 @@ custom_2           测试训练集     --precision fp32   出现图片，但奇�
 denoise_0          去噪案例命令   --precision fp16   复原效果差
 denoise_1          去噪案例命令   --precision fp32   复原效果差，同上，【为什么这个fp32和fp16相同呢，而且fp16不是全黑】
 denoise_2          测试训练集     --precision fp32   复原效果差，同上
-denoise_3          直接使用他们给出的去噪模型测试     
+denoise_3          直接使用他们给出的去噪模型测试     效果好，背景稍微不对，应该是不经过训练的问题
+
+【1.13推理实验】    在results/1.13 下       
+custom_0           自定义模型测试 --precision fp32   
+denoise_0          去噪案例命令   

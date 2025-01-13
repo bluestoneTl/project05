@@ -40,7 +40,8 @@ MODELS = {
     "scunet_psnr": "https://github.com/cszn/KAIR/releases/download/v1.0/scunet_color_real_psnr.pth",
 
     # "swinir_general": "https://hf-mirror.com/lxq007/DiffBIR/resolve/main/general_swinir_v1.ckpt",   #更改为我的一阶段训练swinir模型
-    "swinir_general": "experiment2/stage1/checkpoints/0150000.pt",
+    # "swinir_general": "experiment2/stage1/checkpoints/0150000.pt",
+    "swinir_general": "weights/general_swinir_v1.ckpt",
 
     "swinir_realesrgan": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/realesrgan_s4_swinir_100k.pth",
     # --------------- pre-trained stable diffusion weights ---------------
@@ -52,10 +53,12 @@ MODELS = {
     "v1_face": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/v1_face.pth",
 
     # "v1_general": "https://hf-mirror.com/lxq007/DiffBIR-v2/resolve/main/v1_general.pth",             #更改为我的二阶段训练的模型
-    "v1_general": "experiment2/stage2/checkpoints/0030000.pt",
+    # "v1_general": "experiment2/stage2/checkpoints/0030000.pt",
+    "v1_general": "experiment3/stage2/checkpoints/0010000.pt",
 
     # "v2": "https://hf-mirror.com/lxq007/DiffBIR-v2/resolve/main/v2.pth",                             #更改为我的二阶段训练的模型
-    "v2": "experiment2/stage2/checkpoints/0030000.pt",
+    # "v2": "experiment2/stage2/checkpoints/0030000.pt",
+    "v2": "experiment3/stage2/checkpoints/0010000.pt",
     
     "v2.1": "https://huggingface.co/lxq007/DiffBIR-v2/resolve/main/DiffBIR_v2.1.pt",
 }
