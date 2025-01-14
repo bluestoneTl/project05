@@ -1,0 +1,98 @@
+custom:
+python -u inference.py \
+--upscale 1 \
+--version custom \
+--train_cfg configs/train/train_stage2.yaml \
+--ckpt experiment3/stage2/checkpoints/0010000.pt \
+--captioner none \
+--cfg_scale 4.0 \
+--noise_aug 0 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.14/custom_1 \
+--precision fp32 \
+--sampler spaced \
+--steps 50 \
+--pos_prompt '' \
+--neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' 
+
+denoise:
+python -u inference.py \
+--task denoise \
+--upscale 1 \
+--version v2 \
+--sampler spaced \
+--steps 50 \
+--captioner none \
+--pos_prompt '' \
+--neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' \
+--cfg_scale 4.0 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.13/denoise_0 \
+--device cuda \
+--precision fp32
+
+python -u inference.py 
+--upscale 1 
+--version custom 
+--train_cfg configs/train/train_stage2.yaml 
+--ckpt experiment3/stage2/checkpoints/0010000.pt 
+--captioner none 
+--cfg_scale 4.0 
+--noise_aug 0 
+--input datasets/ZZCX_01_14/test/LQ 
+--output results/1.14/custom_1 
+--precision fp16 
+--sampler spaced 
+--steps 50 
+--pos_prompt '' 
+--neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' 
+
+【1.14实验】
+custom_0:
+python -u inference.py \
+--upscale 1 \
+--version custom \
+--train_cfg configs/train/train_stage2.yaml \
+--ckpt experiment3/stage2/checkpoints/0030000.pt \
+--captioner none \
+--cfg_scale 4 \
+--noise_aug 0 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.14/custom_0 \
+--precision fp16 \
+--sampler spaced \
+--steps 50 \
+--pos_prompt '' \
+--neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' 
+custom_1:
+python -u inference.py \
+--upscale 1 \
+--version custom \
+--train_cfg configs/train/train_stage2.yaml \
+--ckpt experiment3/stage2/checkpoints/0010000.pt \
+--captioner none \
+--cfg_scale 4.0 \
+--noise_aug 0 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.14/custom_1 \
+--precision fp32 \
+--sampler spaced \
+--steps 50 \
+--pos_prompt '' \
+--neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' 
+custom_2:
+python -u inference.py \
+--upscale 1 \
+--version custom \
+--train_cfg configs/train/train_stage2.yaml \
+--ckpt experiment3/stage2/checkpoints/0020000.pt \
+--captioner none \
+--cfg_scale 4.0 \
+--noise_aug 0 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.14/custom_2 \
+--precision fp32 \
+--sampler spaced \
+--steps 50 \
+--pos_prompt '' \
+--neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' 

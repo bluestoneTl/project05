@@ -47,17 +47,17 @@ Stage 2:
 测试命令：
 python -u inference.py --task denoise --upscale 1 --version v2 --sampler spaced --steps 50 --captioner none --pos_prompt '' --neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' --cfg_scale 4.0 --input datasets/ZZCX_01_14/test/LQ --output results/1_7_1 --device cuda --precision fp32
 
-自定义模型的测试命令：
+自定义模型的测试命令模板：
 python -u inference.py \
 --upscale 1 \
 --version custom \
 --train_cfg configs/train/train_stage2.yaml \
---ckpt experiment2/stage2/checkpoints/0030000.pt \
+--ckpt experiment3/stage2/checkpoints/0030000.pt \
 --captioner llava \
 --cfg_scale 8 \
 --noise_aug 0 \
---input datasets/ZZCX_01_14/train/LQ \
---output results/1.12/custom_2 \
+--input datasets/ZZCX_01_14/test/LQ \
+--output results/1.14/custom_0 \
 --precision fp32
 
 推理实验  
@@ -67,7 +67,7 @@ python -u inference.py \
 1_7_4   v2的denoise测试    更改了bid_loop.py的v2加载模型为 swinir
 
 【注意，去噪命令需要在pretrained_models.py中更改模型的加载路径，在common.py中更改加载方式】
-去噪案例命令：
+去噪案例命令模板：
 python -u inference.py \
 --task denoise \
 --upscale 1 \
@@ -93,5 +93,13 @@ denoise_2          测试训练集     --precision fp32   复原效果差，同�
 denoise_3          直接使用他们给出的去噪模型测试     效果好，背景稍微不对，应该是不经过训练的问题
 
 【1.13推理实验】    在results/1.13 下       
-custom_0           自定义模型测试 --precision fp32   
-denoise_0          去噪案例命令   
+custom_0           自定义模型测试  --precision fp32   奇怪的表现，但看零件形状是完整的，要去看一下两个推理方式哪里不同
+custom_1           修复推理bug     --precision fp32   成功！，问题是脚本加载的时候，权重处理问题
+custom_2           修复后，测试    --precision fp16   成功！全黑的问题是bitsandbytes版本冲突，但是不报错正常运行了
+denoise_0          去噪案例命令    --precision fp32   哈哈，效果很好！稍微的缺点，1k的背景暗一些
+
+【1.14推理实验】    在results/1.14 下       
+custom_0           3w次训练测试    --precision fp16    
+custom_1           1w次训练测试    --precision fp16   
+denoise_0          3w次训练测试    --precision fp16   
+denoise_1          去噪案例命令    --precision fp32   

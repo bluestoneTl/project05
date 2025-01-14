@@ -38,7 +38,11 @@ class CustomInferenceLoop(InferenceLoop):
 
         # load pre-trained SD weight
         sd_weight = torch.load(self.train_cfg.train.sd_path, map_location="cpu")
-        sd_weight = sd_weight["state_dict"]
+        # sd_weight = sd_weight["state_dict"]                 # 【与denose不同点2】
+        if "state_dict" in sd_weight:                         # 【与denose不同点2】
+            sd_weight = sd_weight["state_dict"]
+        if list(sd_weight.keys())[0].startswith("module"):
+            sd_weight = {k[len("module.") :]: v for k, v in sd_weight.items()} 
         unused, missing = self.cldm.load_pretrained_sd(sd_weight)
         print(
             f"load pretrained stable diffusion, "
@@ -47,12 +51,10 @@ class CustomInferenceLoop(InferenceLoop):
         # load controlnet weight
         control_weight = torch.load(self.args.ckpt, map_location="cpu")
 
-        # === 尝试解决推理黑图问题 ===         下面代码来自common.py 118-121行 
-        if "state_dict" in control_weight:
+        if "state_dict" in control_weight:                    # 【与denose不同点3】
             control_weight = control_weight["state_dict"]
         if list(control_weight.keys())[0].startswith("module"):
             control_weight = {k[len("module.") :]: v for k, v in control_weight.items()}
-        # === 尝试解决推理黑图问题 ===
 
         self.cldm.load_controlnet_from_ckpt(control_weight)
         print(f"load controlnet weight")
@@ -74,12 +76,10 @@ class CustomInferenceLoop(InferenceLoop):
         # NOTE: Use SwinIR as stage-1 model. Change it if you want.
         self.cleaner: SwinIR = instantiate_from_config(self.train_cfg.model.swinir)
         weight = torch.load(self.train_cfg.train.swinir_path, map_location="cpu")
-        if "state_dict" in weight:
+        if "state_dict" in weight:              # 【与denose不同点1】
             weight = weight["state_dict"]
-        weight = {
-            (k[len("module.") :] if k.startswith("module.") else k): v
-            for k, v in weight.items()
-        }
+        if list(weight.keys())[0].startswith("module"):       
+            weight = {k[len("module.") :]: v for k, v in weight.items()}                                
         self.cleaner.load_state_dict(weight, strict=True)
         self.cleaner.eval().to(self.args.device)
 
