@@ -100,6 +100,16 @@ denoise_0          去噪案例命令    --precision fp32   哈哈，效果很�
 
 【1.14推理实验】    在results/1.14 下       
 custom_0           3w次训练测试    --precision fp16    
-custom_1           1w次训练测试    --precision fp16   
-denoise_0          3w次训练测试    --precision fp16   
-denoise_1          去噪案例命令    --precision fp32   
+custom_1           1w次训练测试    --precision fp32   
+custom_2           2w次训练测试    --precision fp32  
+custom_3           mini_test      --cfg_scale 5.0     --strength 1.0
+custom_4           mini_test      --cfg_scale 6.0     --strength 1.0
+custom_5           mini_test      --cfg_scale 7.0     --strength 1.0
+custom_6           mini_test      --cfg_scale 8.0     --strength 1.0
+custom_7           mini_test      --cfg_scale 9.0     --strength 1.0
+custom_8           mini_test      --cfg_scale 4.0     --strength 0.25
+custom_9           mini_test      --cfg_scale 4.0     --strength 0.5
+custom_10          mini_test      --cfg_scale 4.0     --strength 1.0
+custom_11          mini_test      --cfg_scale 4.0     --strength 2.0
+custom_12          mini_test      --cfg_scale 4.0     --strength 4.0
+ 
