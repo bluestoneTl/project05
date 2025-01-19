@@ -148,17 +148,26 @@ class ControlLDM(nn.Module):
         tiled: bool = False,
         tile_size: int = -1,
     ) -> Dict[str, torch.Tensor]:
-        return dict(
-            c_txt=self.clip.encode(txt),  
-            c_img=self.vae_encode(
-                cond_img * 2 - 1,
-                sample=False,
-                tiled=tiled,
-                tile_size=tile_size,
-            ),
-            #读取 特征，并且与c_img 进行concat ，再通过卷积将维度（如果需要）
-            # concat  + 卷积 减少通道数
+       
+        c_txt=self.clip.encode(txt)
+        c_img=self.vae_encode(
+            cond_img * 2 - 1,
+            sample=False,
+            tiled=tiled,
+            tile_size=tile_size,
         )
+        #读取 特征，并且与c_img 进行concat ，再通过卷积将维度（如果需要）
+
+        batch_size, c_img_channels, c_img_height, c_img_width = c_img.shape
+        condition = condition.view(batch_size, -1, c_img_height, c_img_width)
+        concatenated = torch.cat([c_img, condition], dim=1)
+        # 使用卷积层
+        adjusted_features = self.conv(concatenated)
+        return dict(
+            c_txt=c_txt,
+            c_img=adjusted_features,
+        )
+        
 
     def forward(self, x_noisy, t, cond):
         c_txt = cond["c_txt"]

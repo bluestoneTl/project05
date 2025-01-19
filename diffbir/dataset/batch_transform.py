@@ -280,6 +280,7 @@ class RealESRGANBatchTransform(BatchTransform):
         # [-1, 1], float32, rgb, nhwc
         hq = (self.gt * 2 - 1).float().permute(0, 2, 3, 1).contiguous()
         txt = self.txt
+        condition = batch.get("condition", None)  # 尝试从 batch 中获取 condition 特征
 
         # return dict(jpg=hq, hint=lq, txt=batch["txt"])
-        return hq, lq, txt
+        return hq, lq, txt, condition
