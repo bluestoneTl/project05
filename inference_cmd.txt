@@ -96,17 +96,18 @@ python -u inference.py \
 --steps 50 \
 --pos_prompt '' \
 --neg_prompt 'low quality, blurry, low-resolution, noisy, unsharp, weird textures' 
-custom_3-7:
+custom_3-11:
 python -u inference.py \
 --upscale 1 \
 --version custom \
 --train_cfg configs/train/train_stage2.yaml \
---ckpt experiment3/stage2/checkpoints/0020000.pt \
+--ckpt experiment3/stage2/checkpoints/0030000.pt \
 --captioner none \
---cfg_scale 8 \
+--cfg_scale 4.0 \
+--strength 4.0 \
 --noise_aug 0 \
 --input datasets/ZZCX_01_14/test_mini/LQ \
---output results/1.14/custom_3 \
+--output results/1.14/custom_12 \
 --precision fp32 \
 --sampler spaced \
 --steps 50 \

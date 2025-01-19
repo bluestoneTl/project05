@@ -148,7 +148,9 @@ class ControlLDM(nn.Module):
         tile_size: int = -1,
     ) -> Dict[str, torch.Tensor]:
         return dict(
-            c_txt=self.clip.encode(txt),
+            c_txt=self.clip.encode(txt),  
+            c_img2 =                       # 加载clip图像的编码器
+            concat  + 卷积 减少通道数
             c_img=self.vae_encode(
                 cond_img * 2 - 1,
                 sample=False,
