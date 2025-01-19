@@ -144,19 +144,20 @@ class ControlLDM(nn.Module):
         self,
         cond_img: torch.Tensor,
         txt: List[str],
+        condition: torch.Tensor,  # 新增条件特征作为输入
         tiled: bool = False,
         tile_size: int = -1,
     ) -> Dict[str, torch.Tensor]:
         return dict(
             c_txt=self.clip.encode(txt),  
-            c_img2 =                       # 加载clip图像的编码器
-            concat  + 卷积 减少通道数
             c_img=self.vae_encode(
                 cond_img * 2 - 1,
                 sample=False,
                 tiled=tiled,
                 tile_size=tile_size,
             ),
+            #读取 特征，并且与c_img 进行concat ，再通过卷积将维度（如果需要）
+            # concat  + 卷积 减少通道数
         )
 
     def forward(self, x_noisy, t, cond):

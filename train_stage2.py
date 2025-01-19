@@ -123,14 +123,15 @@ def main(args) -> None:
         for batch in loader:
             to(batch, device)
             batch = batch_transform(batch)
-            gt, lq, prompt = batch
+            gt, lq, prompt, condition = batch
             gt = rearrange(gt, "b h w c -> b c h w").contiguous().float()
             lq = rearrange(lq, "b h w c -> b c h w").contiguous().float()
+            condition = rearrange(condition, "b f -> b f 1 1").contiguous().float()  # 调整特征的维度，
 
             with torch.no_grad():
                 z_0 = pure_cldm.vae_encode(gt)
                 clean = swinir(lq)
-                cond = pure_cldm.prepare_condition(clean, prompt)
+                cond = pure_cldm.prepare_condition(clean, prompt,condition)
                 # noise augmentation
                 cond_aug = copy.deepcopy(cond)
                 if noise_aug_timestep > 0:
