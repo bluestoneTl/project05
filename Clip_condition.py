@@ -13,7 +13,7 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 image_dir = "datasets/ZZCX_01_20/train_RGB/HQ"  
 
 # 定义保存特征的目录
-feature_dir = "datasets/ZZCX_01_20/train/condition"
+feature_dir = "datasets/ZZCX_01_20/train/condition_RGB"
 os.makedirs(feature_dir, exist_ok=True)
 
 # 定义图片转换
