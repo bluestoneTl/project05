@@ -1,8 +1,8 @@
 import cv2
 import os
 
-input_folder = "edge_test"
-output_folder = "edge_test_canny"
+input_folder = "datasets/ZZCX_01_20/train_RGB/HQ"
+output_folder = "datasets/ZZCX_01_20/train/condition_edge"
 
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
