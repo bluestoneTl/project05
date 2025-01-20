@@ -1,6 +1,6 @@
 import cv2
 import os
-
+# python canny.py   
 input_folder = "datasets/ZZCX_01_20/train_RGB/HQ"
 output_folder = "datasets/ZZCX_01_20/train/condition_edge"
 
