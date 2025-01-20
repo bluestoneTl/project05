@@ -31,5 +31,6 @@ for filename in os.listdir(image_dir):
         feature_filename = os.path.splitext(filename)[0] + ".pt"
         feature_path = os.path.join(feature_dir, feature_filename)
         torch.save(image_features, feature_path)
+        print(f"{filename} 特征提取完成。")
 
 print("图片特征提取并保存完成。")
