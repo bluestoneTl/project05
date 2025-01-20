@@ -114,11 +114,7 @@ custom_11          mini_test      --cfg_scale 4.0     --strength 2.0
 custom_12          mini_test      --cfg_scale 4.0     --strength 4.0
 
 
-rm datasets/ZZCX_01_14/test_mini/HQ/z339_on_3y_1k.png   \
-rm datasets/ZZCX_01_14/test_mini/HQ/z339_on_3y_2k.png   \
-rm datasets/ZZCX_01_14/test_mini/HQ/z339_on_3y_3k.png   \
-rm datasets/ZZCX_01_14/test_mini/HQ/z339_on_3y_5k.png   \
-rm datasets/ZZCX_01_14/test_mini/LQ/z339_on_3y_1k.png   \
-rm datasets/ZZCX_01_14/test_mini/LQ/z339_on_3y_2k.png   \
-rm datasets/ZZCX_01_14/test_mini/LQ/z339_on_3y_3k.png   \
-rm datasets/ZZCX_01_14/test_mini/LQ/z339_on_3y_5k.png   
+find datasets/ZZCX_01_20/train/HQ -type f > datasets/ZZCX_01_20/train/HQ.list
+find datasets/ZZCX_01_20/train/LQ -type f > datasets/ZZCX_01_20/train/LQ.list
+find datasets/ZZCX_01_20/train/condition_RGB -type f > datasets/ZZCX_01_20/train/condition_RGB.list
+find datasets/ZZCX_01_20/train/condition_edge -type f > datasets/ZZCX_01_20/train/condition_edge.list

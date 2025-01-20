@@ -90,7 +90,7 @@ class CodeformerDataset(data.Dataset):
     def load_condition_features(self, index: int) -> Optional[np.ndarray]:
         """加载条件特征文件"""
         condition_file = self.image_files_condition[index]
-        condition_path = condition_file["feature_path"] 
+        condition_path = condition_file["image_path"] 
         condition_bytes = None
         max_retry = 5
         while condition_bytes is None:
@@ -136,7 +136,6 @@ class CodeformerDataset(data.Dataset):
 
             lq = (img_lq[..., ::-1] / 255.0).astype(np.float32)
 
-            # 加载条件特征
             condition_features = self.load_condition_features(index)
             
             # # 测试图像读入是否正确
