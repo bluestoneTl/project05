@@ -3,12 +3,13 @@ python -u inference.py \
 --upscale 1 \
 --version custom \
 --train_cfg configs/train/train_stage2.yaml \
---ckpt experiment3/stage2/checkpoints/0010000.pt \
+--ckpt experiment5/stage2/checkpoints/0030000.pt \
 --captioner none \
 --cfg_scale 4.0 \
 --noise_aug 0 \
 --input datasets/ZZCX_01_14/test/LQ \
---output results/1.14/custom_1 \
+--file_list_condition: datasets/ZZCX_01_20/train/condition_RGB.list \
+--output results/1.24/custom_1 \
 --precision fp32 \
 --sampler spaced \
 --steps 50 \

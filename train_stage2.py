@@ -124,9 +124,16 @@ def main(args) -> None:
             to(batch, device)
             batch = batch_transform(batch)
             gt, lq, prompt, condition = batch
+            # gt shape: torch.Size([16, 512, 512, 3])
+            # lq shape: torch.Size([16, 512, 512, 3])
+            # conditon shape: torch.Size([16, 1, 512])
             gt = rearrange(gt, "b h w c -> b c h w").contiguous().float()
             lq = rearrange(lq, "b h w c -> b c h w").contiguous().float()
-            condition = rearrange(condition, "b f -> b f 1 1").contiguous().float()  # 调整特征的维度，
+            condition = torch.repeat_interleave(condition, 3, dim=1)
+            condition = torch.unsqueeze(condition, dim=-1).repeat(1, 1, 1, 512)
+            # gt shape: torch.Size([16, 3, 512, 512])
+            # lq shape: torch.Size([16, 3, 512, 512])
+            # conditon shape: torch.Size([16, 3, 512, 512])
 
             with torch.no_grad():
                 z_0 = pure_cldm.vae_encode(gt)

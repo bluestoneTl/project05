@@ -30,6 +30,14 @@ class ControlLDM(nn.Module):
         self.scale_factor = latent_scale_factor
         self.control_scales = [1.0] * 13
 
+        self.conv = nn.Conv2d(
+            in_channels=6,  # 输入通道数，因为输入张量的通道数为 6
+            out_channels=3,  # 输出通道数，将通道数从 6 降低到 3
+            kernel_size=1,  # 使用 1x1 卷积核，不改变特征图的大小
+            stride=1,  # 步长为 1，保持尺寸不变
+            padding=0  # 不使用填充，因为 1x1 卷积核且步长为 1 时不需要填充
+        )
+
     @torch.no_grad()
     def load_pretrained_sd(
         self, sd: Dict[str, torch.Tensor]
@@ -148,7 +156,6 @@ class ControlLDM(nn.Module):
         tiled: bool = False,
         tile_size: int = -1,
     ) -> Dict[str, torch.Tensor]:
-        
         # return dict(
         #     c_txt=self.clip.encode(txt),
         #     c_img=self.vae_encode(
@@ -157,24 +164,29 @@ class ControlLDM(nn.Module):
         #         tiled=tiled,
         #         tile_size=tile_size,
         #     ),
-        
+        # )
+        # # 原本c_img shape: torch.Size([16, 4, 64, 64])
+
+        # cond_img shape: torch.Size([16, 3, 512, 512])
+        # condition shape: torch.Size([16, 3, 512, 512])
+
+        # 拼接 c_img 和 condition 沿着通道维度
+        combined = torch.cat((cond_img, condition), dim=1)          
+        # combined shape: torch.Size([16, 6, 512, 512])
+        # 使用卷积层降低维度
+        combined = self.conv(combined)
+        # conv shape: torch.Size([16, 3, 512, 512])
         c_txt=self.clip.encode(txt)
         c_img=self.vae_encode(
-            cond_img * 2 - 1,
+            combined * 2 - 1,
             sample=False,
             tiled=tiled,
             tile_size=tile_size,
         )
-        #读取 特征，并且与c_img 进行concat ，再通过卷积将维度（如果需要）
-
-        batch_size, c_img_channels, c_img_height, c_img_width = c_img.shape
-        condition = condition.view(batch_size, -1, c_img_height, c_img_width)
-        concatenated = torch.cat([c_img, condition], dim=1)
-        # 使用卷积层
-        adjusted_features = self.conv(concatenated)
+        # c_img shape: torch.Size([16, 4, 64, 64])
         return dict(
             c_txt=c_txt,
-            c_img=adjusted_features,
+            c_img=c_img,
         )
         
 

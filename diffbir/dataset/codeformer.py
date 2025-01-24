@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 from PIL import Image
 import torch.utils.data as data
-
+import torch
 from .degradation import (
     random_mixed_kernels,
     random_add_gaussian_noise,
@@ -100,9 +100,14 @@ class CodeformerDataset(data.Dataset):
             max_retry -= 1
             if condition_bytes is None:
                 time.sleep(0.5)
-        # 假设特征文件是npy格式
+        # (diffbir) root@aqo889okl8js-0:/nc1test1/tl/project05# python condition_check.py
+        # The loaded data is a torch.Tensor.
+        # Tensor shape: torch.Size([1, 512])
+        # Tensor data:
+        # 特征文件是tensor格式
         try:
-            condition_features = np.load(io.BytesIO(condition_bytes))
+            # 使用 torch.load 加载 torch.Tensor
+            condition_features = torch.load(io.BytesIO(condition_bytes))
             return condition_features
         except Exception as e:
             print(f"Failed to load condition features from {condition_path}: {e}")
@@ -136,7 +141,7 @@ class CodeformerDataset(data.Dataset):
 
             lq = (img_lq[..., ::-1] / 255.0).astype(np.float32)
 
-            condition_features = self.load_condition_features(index)
+            condition = self.load_condition_features(index)
             
             # # 测试图像读入是否正确
             # print("gt如下:")
@@ -145,7 +150,7 @@ class CodeformerDataset(data.Dataset):
             # print(lq)
             # time.sleep(300)
 
-            return gt, lq, prompt, condition_features
+            return gt, lq, prompt, condition
 
     # def __getitem__(self, index: int) -> Dict[str, Union[np.ndarray, str]]:
     #     # load gt image

@@ -32,7 +32,7 @@ def resize_short_edge_to(imgs: torch.Tensor, size: int) -> torch.Tensor:
         out_h, out_w = int(h * (size / w)), size
 
     return F.interpolate(imgs, size=(out_h, out_w), mode="bicubic", antialias=True)
-
+ 
 
 def pad_to_multiples_of(imgs: torch.Tensor, multiple: int) -> torch.Tensor:
     _, _, h, w = imgs.size()
@@ -93,6 +93,7 @@ class Pipeline:
         s_noise: float,
         eta: float,
         order: int,
+        condition: torch.Tensor  # 新增 condition 参数
     ) -> torch.Tensor:
         bs, _, h0, w0 = cond_img.shape
         # 1. Pad condition image for VAE encoding (scale factor = 8)
@@ -113,19 +114,27 @@ class Pipeline:
         if vae_encoder_tiled:
             if vae_encoder_tile_size % 8 != 0:
                 raise ValueError("VAE encoder tile size must be a multiple of 8")
+        # # 手动设置 condition 为一个空矩阵
+        # condition_shape = (1, 3, 576, 576)  # 与 cond_img 的形状匹配
+        # condition = torch.empty(condition_shape)  
+        condition = condition.to(self.device)
+        # cond_img shape: torch.Size([1, 3, 576, 576])
         with VRAMPeakMonitor("encoding condition image"):
             cond = self.cldm.prepare_condition(
                 cond_img,
                 [pos_prompt] * bs,
+                condition,
                 vae_encoder_tiled,
                 vae_encoder_tile_size,
             )
             uncond = self.cldm.prepare_condition(
                 cond_img,
                 [neg_prompt] * bs,
+                condition,
                 vae_encoder_tiled,
                 vae_encoder_tile_size,
             )
+        
         h1, w1 = cond["c_img"].shape[2:]
         # 2. Pad condition latent for U-Net inference (scale factor = 8)
         # 2.1 Check cldm tile size
@@ -261,6 +270,7 @@ class Pipeline:
         s_noise: float,
         eta: float,
         order: int,
+        condition: torch.Tensor  # 新增 feature 参数
     ) -> np.ndarray:
         lq_tensor = (
             torch.tensor(lq, dtype=torch.float32, device=self.device)
@@ -302,6 +312,7 @@ class Pipeline:
             s_noise,
             eta,
             order,
+            condition  # 传递 feature 给 apply_cldm 方法
         )
         sample = F.interpolate(
             wavelet_reconstruction((sample + 1) / 2, cond_img),

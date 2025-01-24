@@ -147,7 +147,16 @@ class InferenceLoop:
             lq = Image.open(file_path).convert("RGB")
             print(f"load lq: {file_path}")
             self.loop_ctx["file_stem"] = stem
-            yield lq
+
+            # 【读取对应的特征】
+            feature_file = os.path.join(self.args.feature_path, f"{stem}.pt")
+            if os.path.exists(feature_file):
+                feature = torch.load(feature_file)
+            else:
+                print(f"Feature file {feature_file} not found. Using empty tensor as feature.")
+                feature = torch.empty(0)
+            
+            yield lq, feature
 
     def after_load_lq(self, lq: Image.Image) -> np.ndarray:
         return np.array(lq)
@@ -206,6 +215,7 @@ class InferenceLoop:
                         self.args.s_noise,
                         self.args.eta,
                         self.args.order,
+                        self.args.condition_path
                     )
                 samples.extend(list(batch_samples))
             self.save(samples, pos_prompt, neg_prompt)

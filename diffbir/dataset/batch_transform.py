@@ -282,6 +282,7 @@ class RealESRGANBatchTransform(BatchTransform):
         txt = self.txt
         condition = batch.get("condition", None)  # 尝试从 batch 中获取 condition 特征
         print(batch.keys())
+        print("batch_transform.py中,打印了batch的keys")
         import time
         time.sleep(3000)
         # return dict(jpg=hq, hint=lq, txt=batch["txt"])
