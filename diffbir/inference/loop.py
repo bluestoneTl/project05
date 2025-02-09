@@ -149,14 +149,14 @@ class InferenceLoop:
             self.loop_ctx["file_stem"] = stem
 
             # 【读取对应的特征】
-            feature_file = os.path.join(self.args.feature_path, f"{stem}.pt")
-            if os.path.exists(feature_file):
-                feature = torch.load(feature_file)
+            condition_file = os.path.join(self.args.condition_path, f"{stem}.pt")
+            if os.path.exists(condition_file):
+                condition = torch.load(condition_file)
             else:
-                print(f"Feature file {feature_file} not found. Using empty tensor as feature.")
-                feature = torch.empty(0)
+                print(f"Condition file {condition_file} not found. Using empty tensor as condition.")
+                condition = torch.empty(0)
             
-            yield lq, feature
+            yield lq, condition
 
     def after_load_lq(self, lq: Image.Image) -> np.ndarray:
         return np.array(lq)
@@ -170,7 +170,7 @@ class InferenceLoop:
             "bf16": torch.bfloat16,
         }[self.args.precision]
 
-        for lq in self.load_lq():
+        for (lq, condition) in self.load_lq():
             # prepare prompt
             with VRAMPeakMonitor("applying captioner"):
                 caption = self.captioner(lq)
@@ -215,7 +215,7 @@ class InferenceLoop:
                         self.args.s_noise,
                         self.args.eta,
                         self.args.order,
-                        self.args.condition_path
+                        condition,      # 【读取对应的特征】
                     )
                 samples.extend(list(batch_samples))
             self.save(samples, pos_prompt, neg_prompt)

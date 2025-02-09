@@ -54,7 +54,7 @@ model:
         use_checkpoint: True
         image_size: 32 # unused
         in_channels: 4
-        hint_channels: 4
+        hint_channels: 8  # 【融合RGB图像方法一】原来是4，这里实验融合RGB图像更改为8
         model_channels: 320
         attention_resolutions: [ 4, 2, 1 ]
         num_res_blocks: 2
@@ -102,7 +102,8 @@ dataset:
       file_list_HQ: datasets/ZZCX_01_20/train/HQ.list
       file_list_LQ: datasets/ZZCX_01_20/train/LQ.list
       # file_list_condition: datasets/ZZCX_01_20/train/condition_edge.list
-      file_list_condition: datasets/ZZCX_01_20/train/condition_RGB.list
+      # file_list_condition: datasets/ZZCX_01_20/train/condition_RGB.list
+      file_list_RGB: datasets/ZZCX_01_20/train/RGB.list
       file_backend_cfg:
         target: diffbir.dataset.file_backend.HardDiskBackend
       out_size: 512
@@ -122,7 +123,7 @@ train:
   # pretrained sd v2.1 path
   sd_path: weights/v2-1_512-ema-pruned.ckpt
   # experiment directory path
-  exp_dir: experiment5/stage2
+  exp_dir: experiment5/stage_test
   # stage 1 swinir path.
   # In our paper, we use SwinIR trained on ImageNet-1k with codeformer degradation.
   swinir_path: experiment4/stage1/checkpoints/0150000.pt  

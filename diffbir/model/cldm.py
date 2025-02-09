@@ -152,48 +152,61 @@ class ControlLDM(nn.Module):
         self,
         cond_img: torch.Tensor,
         txt: List[str],
-        condition: torch.Tensor,  # 新增条件特征作为输入
+        # condition: torch.Tensor,  # 新增条件特征作为输入
+        cond_RGB: torch.Tensor,  # 新增条件RGB图像作为输入
         tiled: bool = False,
         tile_size: int = -1,
     ) -> Dict[str, torch.Tensor]:
-        # return dict(
-        #     c_txt=self.clip.encode(txt),
-        #     c_img=self.vae_encode(
-        #         cond_img * 2 - 1,
-        #         sample=False,
-        #         tiled=tiled,
-        #         tile_size=tile_size,
-        #     ),
-        # )
-        # # 原本c_img shape: torch.Size([16, 4, 64, 64])
-
-        # cond_img shape: torch.Size([16, 3, 512, 512])
-        # condition shape: torch.Size([16, 3, 512, 512])
-
-        # 拼接 c_img 和 condition 沿着通道维度
-        combined = torch.cat((cond_img, condition), dim=1)          
-        # combined shape: torch.Size([16, 6, 512, 512])
-        # 使用卷积层降低维度
-        combined = self.conv(combined)
-        # conv shape: torch.Size([16, 3, 512, 512])
-        c_txt=self.clip.encode(txt)
-        c_img=self.vae_encode(
-            combined * 2 - 1,
-            sample=False,
-            tiled=tiled,
-            tile_size=tile_size,
-        )
-        # c_img shape: torch.Size([16, 4, 64, 64])
+        #============ 原项目代码 =============
         return dict(
-            c_txt=c_txt,
-            c_img=c_img,
+            c_txt=self.clip.encode(txt),
+            # cond_img shape: torch.Size([16, 3, 512, 512])    # 输入的cond_img的形状
+            c_img=self.vae_encode(
+                cond_img * 2 - 1,   # 像素值范围从 [0, 1] 转换为 [-1, 1]
+                sample=False,
+                tiled=tiled,
+                tile_size=tile_size,
+            ), 
+            c_rgb=self.vae_encode(      # 【融合RGB图像方法一】
+                cond_RGB * 2 - 1,   # 像素值范围从 [0, 1] 转换为 [-1, 1]
+                sample=False,
+                tiled=tiled,
+                tile_size=tile_size,
+            ), 
+            # c_img shape: torch.Size([16, 4, 64, 64])   # 原本输出的结果
         )
-        
+        #============ 原项目代码 =============
+
+        #============ 新增代码 =============
+        # # cond_img shape: torch.Size([16, 3, 512, 512])    # 输入的cond_img的形状
+        # # condition shape: torch.Size([16, 3, 512, 512])
+
+        # # 拼接 c_img 和 condition 沿着通道维度
+        # combined = torch.cat((cond_img, condition), dim=1)          
+        # # combined shape: torch.Size([16, 6, 512, 512])
+        # # 使用卷积层降低维度
+        # combined = self.conv(combined)
+        # # conv shape: torch.Size([16, 3, 512, 512])
+        # c_txt=self.clip.encode(txt)
+        # c_img=self.vae_encode(          #　controlnet的vae encoder讲解
+        #     combined * 2 - 1,
+        #     sample=False,
+        #     tiled=tiled,
+        #     tile_size=tile_size,
+        # )
+        # # c_img shape: torch.Size([16, 4, 64, 64])           # 输出的c_img的形状
+        # return dict(
+        #     c_txt=c_txt,
+        #     c_img=c_img,
+        # )
+        #============ 新增代码 =============
 
     def forward(self, x_noisy, t, cond):
         c_txt = cond["c_txt"]
         c_img = cond["c_img"]
-        control = self.controlnet(x=x_noisy, hint=c_img, timesteps=t, context=c_txt)
+        c_rgb = cond["c_rgb"]  # 【融合RGB图像方法一】
+        
+        control = self.controlnet(x=x_noisy, hint=c_img, rgb=c_rgb, timesteps=t, context=c_txt)  # 【融合RGB图像方法一】
         control = [c * scale for c, scale in zip(control, self.control_scales)]
         eps = self.unet(
             x=x_noisy,

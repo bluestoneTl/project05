@@ -283,7 +283,7 @@ class ControlNet(nn.Module):
                     use_new_attention_order=use_new_attention_order,
                 )
                 if not use_spatial_transformer
-                else SpatialTransformer(  # always uses a self-attn
+                else SpatialTransformer(  # always uses a self-attn     # 只有这里用到了context
                     ch,
                     num_heads,
                     dim_head,
@@ -311,12 +311,16 @@ class ControlNet(nn.Module):
             zero_module(conv_nd(self.dims, channels, channels, 1, padding=0))
         )
 
-    def forward(self, x, hint, timesteps, context, **kwargs):
+    def forward(self, x, hint, rgb, timesteps, context, **kwargs):
         t_emb = timestep_embedding(timesteps, self.model_channels, repeat_only=False)
         emb = self.time_embed(t_emb)
-        x = torch.cat((x, hint), dim=1)
+        print(x.shape)
+        x = torch.cat((x, hint, rgb), dim=1)    # 【融合RGB图像方法一】 通道数 8->12
+        print(x.shape)
+        print(hint.shape)
         outs = []
-
+        import time 
+        time.sleep(1000)
         h, emb, context = map(lambda t: t.type(self.dtype), (x, emb, context))
         for module, zero_conv in zip(self.input_blocks, self.zero_convs):
             h = module(h, emb, context)

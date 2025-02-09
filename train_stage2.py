@@ -123,22 +123,23 @@ def main(args) -> None:
         for batch in loader:
             to(batch, device)
             batch = batch_transform(batch)
-            gt, lq, prompt, condition = batch
+            gt, lq, prompt, rgb = batch
             # gt shape: torch.Size([16, 512, 512, 3])
             # lq shape: torch.Size([16, 512, 512, 3])
             # conditon shape: torch.Size([16, 1, 512])
             gt = rearrange(gt, "b h w c -> b c h w").contiguous().float()
             lq = rearrange(lq, "b h w c -> b c h w").contiguous().float()
-            condition = torch.repeat_interleave(condition, 3, dim=1)
-            condition = torch.unsqueeze(condition, dim=-1).repeat(1, 1, 1, 512)
             # gt shape: torch.Size([16, 3, 512, 512])
             # lq shape: torch.Size([16, 3, 512, 512])
-            # conditon shape: torch.Size([16, 3, 512, 512])
-
+            print("rgb shape:",rgb.shape)
+            import time
+            time.sleep(1000)
             with torch.no_grad():
                 z_0 = pure_cldm.vae_encode(gt)
                 clean = swinir(lq)
-                cond = pure_cldm.prepare_condition(clean, prompt,condition)
+                cond = pure_cldm.prepare_condition(clean, prompt,rgb)      # 【融合RGB图像方法一】
+                # cond shape: torch.Size([16, 4, 64, 64])
+                #  对RGB执行操作  和 cond 进行concat  卷积下降 作为新的condtition   
                 # noise augmentation
                 cond_aug = copy.deepcopy(cond)
                 if noise_aug_timestep > 0:
@@ -149,6 +150,15 @@ def main(args) -> None:
                         ),
                         noise=torch.randn_like(cond_aug["c_img"]),
                     )
+
+                    cond_aug["c_rgb"] = diffusion.q_sample(         # 【融合RGB图像方法一】
+                        x_start=cond_aug["c_rgb"],
+                        t=torch.randint(
+                            0, noise_aug_timestep, (z_0.shape[0],), device=device
+                        ),
+                        noise=torch.randn_like(cond_aug["c_rgb"]),
+                    )
+
             t = torch.randint(
                 0, diffusion.num_timesteps, (z_0.shape[0],), device=device
             )

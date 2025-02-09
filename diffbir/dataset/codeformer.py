@@ -25,7 +25,8 @@ class CodeformerDataset(data.Dataset):
         # file_list: str,
         file_list_HQ: str,
         file_list_LQ: str,        
-        file_list_condition: str,           # 新增的条件文件列表
+        # file_list_condition: str,           # 新增的条件文件列表
+        file_list_RGB: str,
         file_backend_cfg: Mapping[str, Any],
         out_size: int,
         # 以下这些参数原本用于生成LQ图像，现暂时保留
@@ -43,10 +44,12 @@ class CodeformerDataset(data.Dataset):
         # self.image_files = load_file_list(file_list)
         self.file_list_HQ = file_list_HQ
         self.file_list_LQ = file_list_LQ
-        self.file_list_condition = file_list_condition
+        # self.file_list_condition = file_list_condition
+        self.file_list_RGB = file_list_RGB
         self.image_files_HQ = load_file_list(file_list_HQ)
         self.image_files_LQ = load_file_list(file_list_LQ)
-        self.image_files_condition = load_file_list(file_list_condition)    # 新增的条件文件列表
+        # self.image_files_condition = load_file_list(file_list_condition)    # 新增的条件文件列表
+        self.image_files_RGB = load_file_list(file_list_RGB)
         self.file_backend = instantiate_from_config(file_backend_cfg)
         self.out_size = out_size
         self.crop_type = crop_type
@@ -107,7 +110,7 @@ class CodeformerDataset(data.Dataset):
         # 特征文件是tensor格式
         try:
             # 使用 torch.load 加载 torch.Tensor
-            condition_features = torch.load(io.BytesIO(condition_bytes))
+            condition_features = torch.load(condition_bytes)  # 用这个实验
             return condition_features
         except Exception as e:
             print(f"Failed to load condition features from {condition_path}: {e}")
@@ -136,12 +139,24 @@ class CodeformerDataset(data.Dataset):
                     print(f"filed to load {lq_path}, try another image")
                     index = random.randint(0, len(self) - 1)
 
+            # 加载RGB图像
+            img_rgb = None
+            while img_rgb is None:
+                image_file_RGB = self.image_files_RGB[index]
+                rgb_path = image_file_RGB["image_path"]
+                img_rgb = self.load_gt_image(rgb_path)
+                if img_rgb is None:
+                    print(f"filed to load {rgb_path}, try another image")
+                    index = random.randint(0, len(self) - 1)
+
             img_gt = (img_gt[..., ::-1] / 255.0).astype(np.float32)
             gt = (img_gt[..., ::-1] * 2 - 1).astype(np.float32)
 
             lq = (img_lq[..., ::-1] / 255.0).astype(np.float32)
 
-            condition = self.load_condition_features(index)
+            rgb = (img_rgb[..., ::-1] / 255.0).astype(np.float32)
+
+            # condition = self.load_condition_features(index)
             
             # # 测试图像读入是否正确
             # print("gt如下:")
@@ -150,7 +165,7 @@ class CodeformerDataset(data.Dataset):
             # print(lq)
             # time.sleep(300)
 
-            return gt, lq, prompt, condition
+            return gt, lq, prompt, rgb
 
     # def __getitem__(self, index: int) -> Dict[str, Union[np.ndarray, str]]:
     #     # load gt image

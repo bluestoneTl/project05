@@ -7,9 +7,9 @@ python -u inference.py \
 --captioner none \
 --cfg_scale 4.0 \
 --noise_aug 0 \
---input datasets/ZZCX_01_14/test/LQ \
---file_list_condition: datasets/ZZCX_01_20/train/condition_RGB.list \
---output results/1.24/custom_1 \
+--input datasets/ZZCX_01_20/test/LQ \
+--condition_path datasets/ZZCX_01_20/test/condition_edge \
+--output results/1.24/custom_3 \
 --precision fp32 \
 --sampler spaced \
 --steps 50 \

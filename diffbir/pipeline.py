@@ -114,11 +114,16 @@ class Pipeline:
         if vae_encoder_tiled:
             if vae_encoder_tile_size % 8 != 0:
                 raise ValueError("VAE encoder tile size must be a multiple of 8")
-        # # 手动设置 condition 为一个空矩阵
-        # condition_shape = (1, 3, 576, 576)  # 与 cond_img 的形状匹配
-        # condition = torch.empty(condition_shape)  
-        condition = condition.to(self.device)
+        # # 处理condition维度
         # cond_img shape: torch.Size([1, 3, 576, 576])
+        # condition shape: torch.Size([1, 512])
+        condition = condition.to(self.device)
+        condition = condition.unsqueeze(1)
+        condition = torch.repeat_interleave(condition, 3, dim=1)
+        condition = condition.unsqueeze(-1)
+        condition = condition.repeat(1, 1, 1, 512)
+        condition = F.interpolate(condition, size=(576, 576), mode='bilinear', align_corners=False)
+        # condition shape: torch.Size([1, 3, 576, 576])
         with VRAMPeakMonitor("encoding condition image"):
             cond = self.cldm.prepare_condition(
                 cond_img,
@@ -270,7 +275,7 @@ class Pipeline:
         s_noise: float,
         eta: float,
         order: int,
-        condition: torch.Tensor  # 新增 feature 参数
+        condition: torch.Tensor  # 新增 condition 参数
     ) -> np.ndarray:
         lq_tensor = (
             torch.tensor(lq, dtype=torch.float32, device=self.device)

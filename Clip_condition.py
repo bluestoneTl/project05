@@ -6,14 +6,14 @@ from transformers import CLIPProcessor, CLIPModel
 # python Clip_condition.py
 
 # 加载CLIP模型
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")  # 后面的参数 base-patch32  找下最好的clip模型
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 # 定义图片目录
-image_dir = "datasets/ZZCX_01_20/train_edge/HQ"  
+image_dir = "datasets/ZZCX_01_20/test/LQ"  
 
 # 定义保存特征的目录
-feature_dir = "datasets/ZZCX_01_20/train/condition_edge"
+feature_dir = "datasets/ZZCX_01_20/test/condition_LQ"
 os.makedirs(feature_dir, exist_ok=True)
 
 # 遍历图片目录
