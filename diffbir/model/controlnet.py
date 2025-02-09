@@ -317,7 +317,6 @@ class ControlNet(nn.Module):
         print(x.shape)
         x = torch.cat((x, hint, rgb), dim=1)    # 【融合RGB图像方法一】 通道数 8->12
         print(x.shape)
-        print(hint.shape)
         outs = []
         import time 
         time.sleep(1000)
