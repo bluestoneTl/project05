@@ -167,12 +167,13 @@ class ControlLDM(nn.Module):
                 tiled=tiled,
                 tile_size=tile_size,
             ), 
-            c_rgb=self.vae_encode(      # 【融合RGB图像方法一】
-                cond_RGB * 2 - 1,   # 像素值范围从 [0, 1] 转换为 [-1, 1]
-                sample=False,
-                tiled=tiled,
-                tile_size=tile_size,
-            ), 
+            # c_rgb=self.vae_encode(      # 【融合RGB图像方法一】
+            #     cond_RGB * 2 - 1,   # 像素值范围从 [0, 1] 转换为 [-1, 1]
+            #     sample=False,
+            #     tiled=tiled,
+            #     tile_size=tile_size,
+            # ), 
+            c_rgb=cond_RGB,               # 【融合RGB图像方法二】
             # c_img shape: torch.Size([16, 4, 64, 64])   # 原本输出的结果
         )
         #============ 原项目代码 =============
@@ -204,9 +205,10 @@ class ControlLDM(nn.Module):
     def forward(self, x_noisy, t, cond):
         c_txt = cond["c_txt"]
         c_img = cond["c_img"]
-        c_rgb = cond["c_rgb"]  # 【融合RGB图像方法一】
+        c_rgb = cond["c_rgb"]  # 【融合RGB图像方法一/方法二】
         
-        control = self.controlnet(x=x_noisy, hint=c_img, rgb=c_rgb, timesteps=t, context=c_txt)  # 【融合RGB图像方法一】
+        # control = self.controlnet(x=x_noisy, hint=c_img, rgb=c_rgb, timesteps=t, context=c_txt)  # 【融合RGB图像方法一】
+        control = self.controlnet(x=x_noisy, hint=c_img, rgb=c_rgb, timesteps=t, context=c_txt)  # 【融合RGB图像方法二】
         control = [c * scale for c, scale in zip(control, self.control_scales)]
         eps = self.unet(
             x=x_noisy,

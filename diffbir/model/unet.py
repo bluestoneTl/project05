@@ -37,12 +37,13 @@ class TimestepEmbedSequential(nn.Sequential, TimestepBlock):
     support it as an extra input.
     """
 
-    def forward(self, x, emb, context=None):
+    def forward(self, x, emb, context=None, rgb=None):  # 【融合RGB图像方法二】
         for layer in self:
             if isinstance(layer, TimestepBlock):
                 x = layer(x, emb)
             elif isinstance(layer, SpatialTransformer):
-                x = layer(x, context)
+                # x = layer(x, context) 
+                x = layer(x, context, rgb)                 # 【融合RGB图像方法二】
             else:
                 x = layer(x)
         return x
@@ -412,6 +413,7 @@ class UNetModel(nn.Module):
         use_spatial_transformer=False,    # custom transformer support
         transformer_depth=1,              # custom transformer support
         context_dim=None,                 # custom transformer support
+        rgb_dim=None,                     # 【融合RGB图像方法二】
         n_embed=None,                     # custom support for prediction of discrete ids into codebook of first stage vq model
         legacy=True,
         disable_self_attentions=None,
@@ -536,7 +538,7 @@ class UNetModel(nn.Module):
                                 num_head_channels=dim_head,
                                 use_new_attention_order=use_new_attention_order,
                             ) if not use_spatial_transformer else SpatialTransformer(
-                                ch, num_heads, dim_head, depth=transformer_depth, context_dim=context_dim,
+                                ch, num_heads, dim_head, depth=transformer_depth, context_dim=context_dim, rgb_dim=rgb_dim, # 【融合RGB图像方法二】
                                 disable_self_attn=disabled_sa, use_linear=use_linear_in_transformer,
                                 use_checkpoint=use_checkpoint
                             )
@@ -593,7 +595,7 @@ class UNetModel(nn.Module):
                 num_head_channels=dim_head,
                 use_new_attention_order=use_new_attention_order,
             ) if not use_spatial_transformer else SpatialTransformer(  # always uses a self-attn
-                            ch, num_heads, dim_head, depth=transformer_depth, context_dim=context_dim,
+                            ch, num_heads, dim_head, depth=transformer_depth, context_dim=context_dim,  rgb_dim=rgb_dim, # 【融合RGB图像方法二】
                             disable_self_attn=disable_middle_self_attn, use_linear=use_linear_in_transformer,
                             use_checkpoint=use_checkpoint
                         ),
@@ -647,7 +649,7 @@ class UNetModel(nn.Module):
                                 num_head_channels=dim_head,
                                 use_new_attention_order=use_new_attention_order,
                             ) if not use_spatial_transformer else SpatialTransformer(
-                                ch, num_heads, dim_head, depth=transformer_depth, context_dim=context_dim,
+                                ch, num_heads, dim_head, depth=transformer_depth, context_dim=context_dim, rgb_dim=rgb_dim, # 【融合RGB图像方法二】
                                 disable_self_attn=disabled_sa, use_linear=use_linear_in_transformer,
                                 use_checkpoint=use_checkpoint
                             )

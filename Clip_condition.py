@@ -5,15 +5,15 @@ from PIL import Image
 from transformers import CLIPProcessor, CLIPModel
 # python Clip_condition.py
 
-# 加载CLIP模型
-model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")  # 后面的参数 base-patch32  找下最好的clip模型
-processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+# 加载CLIP模型，更换为ViT-L/14模型
+model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 
 # 定义图片目录
-image_dir = "datasets/ZZCX_01_20/test/LQ"  
+image_dir = "datasets/ZZCX_2_1/test/LQ"  
 
 # 定义保存特征的目录
-feature_dir = "datasets/ZZCX_01_20/test/condition_LQ"
+feature_dir = "datasets/ZZCX_2_1/test/condition_LQ"
 os.makedirs(feature_dir, exist_ok=True)
 
 # 遍历图片目录

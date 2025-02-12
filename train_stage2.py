@@ -126,18 +126,18 @@ def main(args) -> None:
             gt, lq, prompt, rgb = batch
             # gt shape: torch.Size([16, 512, 512, 3])
             # lq shape: torch.Size([16, 512, 512, 3])
-            # conditon shape: torch.Size([16, 1, 512])
+            # rgb shape: torch.Size([16, 512, 512, 3])
             gt = rearrange(gt, "b h w c -> b c h w").contiguous().float()
             lq = rearrange(lq, "b h w c -> b c h w").contiguous().float()
+            # rgb = rearrange(rgb, "b h w c -> b c h w").contiguous().float()     # 【融合RGB图像方法一】
             # gt shape: torch.Size([16, 3, 512, 512])
             # lq shape: torch.Size([16, 3, 512, 512])
-            print("rgb shape:",rgb.shape)
-            import time
-            time.sleep(1000)
+            # rgb shape: 方法一是 torch.Size([16, 3, 512, 512])   方法二是 torch.Size([16, 1, 768])
             with torch.no_grad():
                 z_0 = pure_cldm.vae_encode(gt)
                 clean = swinir(lq)
-                cond = pure_cldm.prepare_condition(clean, prompt,rgb)      # 【融合RGB图像方法一】
+                # cond = pure_cldm.prepare_condition(clean, prompt,rgb)      # 【融合RGB图像方法一】
+                cond = pure_cldm.prepare_condition(clean, prompt,rgb)      # 【融合RGB图像方法二】
                 # cond shape: torch.Size([16, 4, 64, 64])
                 #  对RGB执行操作  和 cond 进行concat  卷积下降 作为新的condtition   
                 # noise augmentation
@@ -151,19 +151,25 @@ def main(args) -> None:
                         noise=torch.randn_like(cond_aug["c_img"]),
                     )
 
-                    cond_aug["c_rgb"] = diffusion.q_sample(         # 【融合RGB图像方法一】
-                        x_start=cond_aug["c_rgb"],
-                        t=torch.randint(
-                            0, noise_aug_timestep, (z_0.shape[0],), device=device
-                        ),
-                        noise=torch.randn_like(cond_aug["c_rgb"]),
-                    )
+                    # cond_aug["c_rgb"] = diffusion.q_sample(         # 【融合RGB图像方法一】
+                    #     x_start=cond_aug["c_rgb"],
+                    #     t=torch.randint(
+                    #         0, noise_aug_timestep, (z_0.shape[0],), device=device
+                    #     ),
+                    #     noise=torch.randn_like(cond_aug["c_rgb"]),
+                    # )
 
             t = torch.randint(
                 0, diffusion.num_timesteps, (z_0.shape[0],), device=device
             )
-
-            loss = diffusion.p_losses(cldm, z_0, t, cond_aug)
+            # print("input parameters!")
+            # print("cldm", cldm)
+            # print("z_0", z_0)
+            # print("t", t)
+            # print("cond_aug", cond_aug)
+            # import time 
+            # time.sleep(100)
+            loss = diffusion.p_losses(cldm, z_0, t, cond_aug)       # 这里用cldm模型，计算损失，后续关键步骤的入口
             opt.zero_grad()
             accelerator.backward(loss)
             opt.step()

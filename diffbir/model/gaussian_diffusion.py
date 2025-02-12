@@ -154,6 +154,10 @@ class Diffusion(nn.Module):
         x_noisy = self.q_sample(x_start=x_start, t=t, noise=noise)
         model_output = model(x_noisy, t, cond)
 
+        # print("output params: ", model_output)
+        # import time 
+        # time.sleep(1000)
+
         if self.parameterization == "x0":
             target = x_start
         elif self.parameterization == "eps":

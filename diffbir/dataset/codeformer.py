@@ -92,17 +92,17 @@ class CodeformerDataset(data.Dataset):
     
     def load_condition_features(self, index: int) -> Optional[np.ndarray]:
         """加载条件特征文件"""
-        condition_file = self.image_files_condition[index]
+        condition_file = self.image_files_RGB[index]
         condition_path = condition_file["image_path"] 
-        condition_bytes = None
-        max_retry = 5
-        while condition_bytes is None:
-            if max_retry == 0:
-                return None
-            condition_bytes = self.file_backend.get(condition_path)
-            max_retry -= 1
-            if condition_bytes is None:
-                time.sleep(0.5)
+        # condition_bytes = None
+        # max_retry = 5
+        # while condition_bytes is None:
+        #     if max_retry == 0:
+        #         return None
+        #     condition_bytes = self.file_backend.get(condition_path)
+        #     max_retry -= 1
+        #     if condition_bytes is None:
+        #         time.sleep(0.5)
         # (diffbir) root@aqo889okl8js-0:/nc1test1/tl/project05# python condition_check.py
         # The loaded data is a torch.Tensor.
         # Tensor shape: torch.Size([1, 512])
@@ -110,7 +110,7 @@ class CodeformerDataset(data.Dataset):
         # 特征文件是tensor格式
         try:
             # 使用 torch.load 加载 torch.Tensor
-            condition_features = torch.load(condition_bytes)  # 用这个实验
+            condition_features = torch.load(condition_path)  # 用这个实验
             return condition_features
         except Exception as e:
             print(f"Failed to load condition features from {condition_path}: {e}")
@@ -139,24 +139,26 @@ class CodeformerDataset(data.Dataset):
                     print(f"filed to load {lq_path}, try another image")
                     index = random.randint(0, len(self) - 1)
 
-            # 加载RGB图像
-            img_rgb = None
-            while img_rgb is None:
-                image_file_RGB = self.image_files_RGB[index]
-                rgb_path = image_file_RGB["image_path"]
-                img_rgb = self.load_gt_image(rgb_path)
-                if img_rgb is None:
-                    print(f"filed to load {rgb_path}, try another image")
-                    index = random.randint(0, len(self) - 1)
+            # # 加载RGB图像           # 【融合RGB图像方法一】
+            # img_rgb = None
+            # while img_rgb is None:
+            #     image_file_RGB = self.image_files_RGB[index]
+            #     rgb_path = image_file_RGB["image_path"]
+            #     img_rgb = self.load_gt_image(rgb_path)
+            #     if img_rgb is None:
+            #         print(f"filed to load {rgb_path}, try another image")
+            #         index = random.randint(0, len(self) - 1)
+            # rgb = (img_rgb[..., ::-1] / 255.0).astype(np.float32)
+
+            # 加载RGB图像特征          # 【融合RGB图像方法二】
+            rgb = self.load_condition_features(index)
 
             img_gt = (img_gt[..., ::-1] / 255.0).astype(np.float32)
             gt = (img_gt[..., ::-1] * 2 - 1).astype(np.float32)
 
             lq = (img_lq[..., ::-1] / 255.0).astype(np.float32)
 
-            rgb = (img_rgb[..., ::-1] / 255.0).astype(np.float32)
 
-            # condition = self.load_condition_features(index)
             
             # # 测试图像读入是否正确
             # print("gt如下:")

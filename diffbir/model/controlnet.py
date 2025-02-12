@@ -72,6 +72,7 @@ class ControlNet(nn.Module):
         use_spatial_transformer=False,  # custom transformer support
         transformer_depth=1,  # custom transformer support
         context_dim=None,  # custom transformer support
+        rgb_dim=None,  # 新增参数      【融合RGB图像方法二】
         n_embed=None,  # custom support for prediction of discrete ids into codebook of first stage vq model
         legacy=True,
         disable_self_attentions=None,
@@ -106,7 +107,7 @@ class ControlNet(nn.Module):
             assert (
                 num_heads != -1
             ), "Either num_heads or num_head_channels has to be set"
-
+            
         self.dims = dims
         self.image_size = image_size
         self.in_channels = in_channels
@@ -222,6 +223,7 @@ class ControlNet(nn.Module):
                                 dim_head,
                                 depth=transformer_depth,
                                 context_dim=context_dim,
+                                rgb_dim=rgb_dim,  # 新增参数      【融合RGB图像方法二】
                                 disable_self_attn=disabled_sa,
                                 use_linear=use_linear_in_transformer,
                                 use_checkpoint=use_checkpoint,
@@ -283,12 +285,13 @@ class ControlNet(nn.Module):
                     use_new_attention_order=use_new_attention_order,
                 )
                 if not use_spatial_transformer
-                else SpatialTransformer(  # always uses a self-attn     # 只有这里用到了context
+                else SpatialTransformer(  # always uses a self-attn     # 只有这里用到了context！ 看后续怎么融合
                     ch,
                     num_heads,
                     dim_head,
                     depth=transformer_depth,
                     context_dim=context_dim,
+                    rgb_dim=rgb_dim,  # 新增参数      【融合RGB图像方法二】
                     disable_self_attn=disable_middle_self_attn,
                     use_linear=use_linear_in_transformer,
                     use_checkpoint=use_checkpoint,
@@ -314,18 +317,18 @@ class ControlNet(nn.Module):
     def forward(self, x, hint, rgb, timesteps, context, **kwargs):
         t_emb = timestep_embedding(timesteps, self.model_channels, repeat_only=False)
         emb = self.time_embed(t_emb)
-        print(x.shape)
-        x = torch.cat((x, hint, rgb), dim=1)    # 【融合RGB图像方法一】 通道数 8->12
-        print(x.shape)
+
+        # x = torch.cat((x, hint, rgb), dim=1)    # 【融合RGB图像方法一】 通道数 8->12
+        x = torch.cat((x, hint), dim=1)    # 【融合RGB图像方法二】 通道数 8     记得改配置文件！！
+
         outs = []
-        import time 
-        time.sleep(1000)
+
         h, emb, context = map(lambda t: t.type(self.dtype), (x, emb, context))
         for module, zero_conv in zip(self.input_blocks, self.zero_convs):
-            h = module(h, emb, context)
+            h = module(h, emb, context, rgb)             # 在这里进行方法二融合RGB图像后续操作
             outs.append(zero_conv(h, emb, context))
 
-        h = self.middle_block(h, emb, context)
+        h = self.middle_block(h, emb, context, rgb)      
         outs.append(self.middle_block_out(h, emb, context))
 
         return outs

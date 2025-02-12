@@ -17,6 +17,7 @@ model:
         use_linear_in_transformer: True
         transformer_depth: 1
         context_dim: 1024
+        rgb_dim: 768    # 【融合RGB图像方法二】
         legacy: False
       vae_cfg:
         embed_dim: 4
@@ -54,7 +55,7 @@ model:
         use_checkpoint: True
         image_size: 32 # unused
         in_channels: 4
-        hint_channels: 8  # 【融合RGB图像方法一】原来是4，这里实验融合RGB图像更改为8
+        hint_channels: 4  # 【融合RGB图像方法一】原来是4，这里实验融合RGB图像更改为8
         model_channels: 320
         attention_resolutions: [ 4, 2, 1 ]
         num_res_blocks: 2
@@ -64,6 +65,7 @@ model:
         use_linear_in_transformer: True
         transformer_depth: 1
         context_dim: 1024
+        rgb_dim: 768
         legacy: False
 
   swinir:
@@ -103,7 +105,7 @@ dataset:
       file_list_LQ: datasets/ZZCX_2_1/train/LQ.list
       # file_list_condition: datasets/ZZCX_01_20/train/condition_edge.list
       # file_list_condition: datasets/ZZCX_01_20/train/condition_RGB.list
-      file_list_RGB: datasets/ZZCX_2_1/train_RGB/RGB.list
+      file_list_RGB: datasets/ZZCX_2_1/train_RGB/condition_RGB.list
       file_backend_cfg:
         target: diffbir.dataset.file_backend.HardDiskBackend
       out_size: 512
@@ -123,7 +125,7 @@ train:
   # pretrained sd v2.1 path
   sd_path: weights/v2-1_512-ema-pruned.ckpt
   # experiment directory path
-  exp_dir: experiment5/stage_test
+  exp_dir: myexperiments/experiment6/stage2
   # stage 1 swinir path.
   # In our paper, we use SwinIR trained on ImageNet-1k with codeformer degradation.
   swinir_path: experiment4/stage1/checkpoints/0150000.pt  

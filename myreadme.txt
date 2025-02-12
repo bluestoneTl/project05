@@ -52,12 +52,13 @@ python -u inference.py \
 --upscale 1 \
 --version custom \
 --train_cfg configs/train/train_stage2.yaml \
---ckpt experiment3/stage2/checkpoints/0030000.pt \
+--ckpt myexperiments/experiment6/stage2/checkpoints/0030000.pt \
 --captioner llava \
 --cfg_scale 8 \
 --noise_aug 0 \
---input datasets/ZZCX_01_14/test/LQ \
---output results/1.14/custom_0 \
+--input datasets/ZZCX_2_1/test/LQ \
+--condition_path datasets/ZZCX_2_1/test/condition_LQ \
+--output results/2.1/custom_0 \
 --precision fp32
 
 推理实验  
@@ -118,3 +119,8 @@ find datasets/ZZCX_01_20/train/HQ -type f > datasets/ZZCX_01_20/train/HQ.list
 find datasets/ZZCX_01_20/train/LQ -type f > datasets/ZZCX_01_20/train/LQ.list
 find datasets/ZZCX_01_20/train/condition_RGB -type f > datasets/ZZCX_01_20/train/condition_RGB.list
 find datasets/ZZCX_01_20/train/condition_edge -type f > datasets/ZZCX_01_20/train/condition_edge.list
+
+find datasets/ZZCX_2_1/train/HQ -type f > datasets/ZZCX_2_1/train/HQ.list
+find datasets/ZZCX_2_1/train/LQ -type f > datasets/ZZCX_2_1/train/LQ.list
+find datasets/ZZCX_2_1/train_RGB/HQ -type f > datasets/ZZCX_2_1/train_RGB/RGB.list
+find datasets/ZZCX_2_1/train_RGB/condition_HQ -type f > datasets/ZZCX_2_1/train_RGB/condition_RGB.list
